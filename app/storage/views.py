@@ -28,6 +28,9 @@ class CreateStorageView(CreateAPIView):
         if not user.is_company_owner:
             return Response({'message': 'Вы не являетесь владельцем компании!'}, status=400)
         company = user.company
+        storage = Storage.objects.filter(company=company).first()
+        if storage:
+            return Response({'message': f'За Вашей компанией уже числится склад (id: {storage.id})!'}, status=400)
         serializer = StorageSerializer(data=request.data, context={'company': company})
         serializer.is_valid(raise_exception=True)
         serializer.save()
