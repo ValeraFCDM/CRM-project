@@ -4,7 +4,6 @@ from .models import Storage
 from .serializers import StorageSerializer
 from drf_spectacular.utils import extend_schema, OpenApiRequest
 
-
 @extend_schema(
     tags=['Storage'],
     description='Создание склада. Доступно только владельцам компании.',
@@ -47,6 +46,8 @@ class CreateStorageView(CreateAPIView):
                 'Доступно всем пользователям, связанным с этой компанией'
 )
 class GetStorageView(RetrieveAPIView):
+    serializer_class = StorageSerializer
+
     def get(self,request, pk):
         user = request.user
         storage = Storage.objects.filter(id=pk).first()
@@ -88,7 +89,7 @@ class UpdateStorageView(UpdateAPIView):
             serializer = StorageSerializer(instance=storage, data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response({'id': 'Склад обновлен'}, status=201)
+            return Response({'message': 'Склад обновлен'}, status=201)
         return Response({'message': 'Вы не являетесь владельцем компании, к которой относится склад!'}, status=403)
 
 
@@ -97,6 +98,8 @@ class UpdateStorageView(UpdateAPIView):
     description='Удаление склада. Доступно только владельцам компании, связанной со складом.'
 )
 class DeleteStorageView(DestroyAPIView):
+    serializer_class = StorageSerializer
+
     def delete(self, request, pk):
         user = request.user
         storage = Storage.objects.filter(id=pk).first()

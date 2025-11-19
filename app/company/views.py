@@ -38,10 +38,7 @@ class CreateCompanyView(CreateAPIView):
         user.is_company_owner = True
         user.company = new_company
         user.save()
-        return Response ({'message': f'Компания успешно добавлена!',
-                          'id': f'{new_company.id}',
-                          'inn': f'{new_company.inn}',
-                          'title': f'{new_company.title}'}, status=201)
+        return Response ({'message': f'Компания успешно добавлена!', 'detail': serializer.data}, status=201)
 
 
 @extend_schema(
@@ -93,6 +90,8 @@ class UpdateCompanyView(UpdateAPIView):
     description='Удаление компании. Доступно только владельцам компании.'
 )
 class DeleteCompanyView(DestroyAPIView):
+    serializer_class = CompanySerializer
+
     def delete(self, request):
         user = request.user
         if not user.is_company_owner:
